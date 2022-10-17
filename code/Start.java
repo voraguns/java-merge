@@ -20,8 +20,7 @@ class Start {
         System.out.println("Reverse all even values only : ");
         int left = 0;
         int right = a.length - 1;
-        while(true) {
-            if (left > right) break;
+        while(left <= right) {
             if (a[left] % 2 == 0 && a[right] % 2 == 0) {
                 int x = a[left];
                 int y = a[right];
