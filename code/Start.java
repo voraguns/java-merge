@@ -1,65 +1,88 @@
 class Start {
     public static void main(String[] args) {
-        // int[] a = { 71, 80, 72, 38, 45, 63, 12, 80, 99 };
-        int[] a = new int[10000000];
-        for (int i = 0; i < a.length; i++) 
-            a[i] = (int)(Math.random() * 1000);
-        
-        Engine e = new Engine();
-        e.sort(a);
-        boolean flag = true;
-        for (int i = 0; i < a.length - 1; i++) {
-            if (a[i] > a[i+1]) {
-                flag = false;
-            }
-        }
-        System.out.println(flag);
+        int[] a = { 8, 3, 5, 2, 1, 7, 4, 1, 3 };  
+        Platform p = new Platform();
+        Element head = p.create(a);
+        head = p.sort(head);       
+        p.print(head);        
     }
 }
 
-class Engine {
-    
-    void sort (int[] a) {
-        sort(a, 0, a.length - 1);
-    }
-    
-    void sort(int[] a, int left, int right) {
-        if (left >= right) return;
-        /// pivot located on the right hand side
-        int pivot = a[right];  // random is better
-        int lower = left;
-        int upper = right - 1;
-        int i = left;
-        while (i <= upper) {
-            int compare = a[i] - pivot;
-            
-            // this element is less than pivot
-            if (compare < 0) { 
-                int t = a[lower];    // exchange a[i] and a[lower]
-                a[lower] = a[i];
-                a[i] = t;
-                i++;
-                lower++;
-            }
-            
-            // this element is equal to pivot
-            if (compare == 0) {
-                i++;
-            }
-            
-            // this element is greater than pivot
-            if (compare > 0) { 
-                int t = a[upper];     // exhange a[i] and a[upper]
-                a[upper] = a[i];
-                a[i] = t;
-                upper--;
-            }
-        }
-        int t = a[lower];
-        a[lower] = a[right];
-        a[right] = t;
+class Platform {
+    Element sort(Element head) {
+        if (head == null) return null;
+        if (head.next == null) return head;
         
-        sort(a, left, lower - 1);
-        sort(a, upper + 1, right);
+        Element back = cut(head);
+        head = sort(head);
+        back = sort(back);
+        return merge(head, back);
+     }
+    
+    Element merge(Element a, Element b) {
+        if (a == null && b == null) 
+            return null;
+        
+        
+        if (a!= null && b == null) 
+            return a;
+        
+        
+        if (a == null && b != null) 
+            return b;
+        
+        if (a.value < b.value) {
+            a.next = merge(a.next, b);
+            return a;
+        } else {
+            b.next = merge(a, b.next);
+            return b;
+        }
     }
+    
+    
+    Element cut(Element e) {
+        if (e == null) return null;         // no element
+        if (e.next == null) return null;    // one element
+        if (e.next.next == null) {          // two element
+            Element back = e.next;
+            e.next = null;
+            return back;
+        }
+        Element fast = e;
+        Element slow = e;
+        while(fast != null && fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        Element back = slow.next;
+        slow.next = null;
+        return back;
+    }
+    
+    void print(Element e) {
+        for (Element current = e; current != null; current = current.next) {
+            System.out.print(" " + current.value);
+        }
+    }
+    
+    Element create(int[] a) {
+        if (a.length == 0) return null;
+        Element head = new Element();
+        head.value = a[0];
+        Element tail = head;
+        for (int i = 1; i < a.length; i++) {
+            Element e = new Element();
+            e.value = a[i];
+            tail.next = e;
+            tail = tail.next;
+        }
+        return head;
+    }
+}
+
+class Element {
+    int value;
+    Element next;
 }
